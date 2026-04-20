@@ -13,10 +13,14 @@ const PORT = process.env.PORT || 5000;
 // Update CORS to allow your Vercel frontend
 app.use(cors({
   origin: [
-    "https://type-shift-gamma.vercel.app/", // Replace with your actual Vercel URL
-    "http://localhost:5173"                       // Allows local development to still work
+    "https://type-shift-gamma.vercel.app", // Remove trailing slash - CORS requires exact match
+    "http://localhost:5173"                 // Allows local development to still work
   ],
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Explicitly allow methods
+  allowedHeaders: ["Content-Type", "Authorization"] // Allow necessary headers
 }));
 
 app.use(express.json());
