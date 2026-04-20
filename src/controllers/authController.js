@@ -51,17 +51,23 @@ export const login = async (req, res) => {
   const { identifier, password } = req.body; // identifier can be username or email
 
   try {
+    console.log('Login attempt for:', identifier);
+
     const [user] = await db
       .select()
       .from(users)
       .where(or(eq(users.username, identifier), eq(users.email, identifier)))
       .limit(1);
 
+    console.log('User found:', !!user);
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
+    console.log('Password match:', isMatch);
+
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -70,12 +76,14 @@ export const login = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.log('Login successful for user:', user.id);
+
     res.json({
       user: { id: user.id, username: user.username, email: user.email },
       token,
     });
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
     res.status(500).json({ message: "Server error during login" });
   }
 };
